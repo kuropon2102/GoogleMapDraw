@@ -95,6 +95,7 @@ public class SimpleMapActivity extends FragmentActivity implements OnMapReadyCal
                     myLocationEnable();
 
 //                    // 位置測定を始める
+                    
 //                    locationStart();
                 }
                 else {
