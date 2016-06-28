@@ -25,7 +25,6 @@ public class SimpleMapActivity extends FragmentActivity implements OnMapReadyCal
 
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private GoogleMap mMap;
-    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,72 +120,5 @@ public class SimpleMapActivity extends FragmentActivity implements OnMapReadyCal
     private void showToast(String msg) {
         Toast error = Toast.makeText(this, msg, Toast.LENGTH_LONG);
         error.show();
-    }
-
-    private void locationStart() {
-        Log.d("debug", "locationStart()");
-
-        // LocationManagerインスタンス生成
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        final boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if (!gpsEnabled) {
-            // GPSを設定するように促す
-            Intent settingsIntent = new Intent(Settings.ACTION_LOCALE_SETTINGS);
-            startActivity(settingsIntent);
-            Log.d("debug", "gpsEnable, startActivity");
-        } else {
-            Log.d("debug", "gpsEnabled");
-        }
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
-            Log.d("debug", "checkSelfPermission false");
-            return;
-        }
-
-        LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                // 経度の表示
-                TextView textView1 = (TextView) findViewById(R.id.textView1);
-                textView1.setText("Latitude:" + location.getLatitude());
-
-                // 緯度の表示
-                TextView textView2 = (TextView) findViewById(R.id.textView2);
-                textView2.setText("Longitude:" + location.getLongitude());
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-                switch (status) {
-                    case LocationProvider.AVAILABLE:
-                        Log.d("debug", "LocationProvider.AVAILABLE");
-                        break;
-                    case LocationProvider.OUT_OF_SERVICE:
-                        Log.d("debug", "LocationProvider.OUT_OF_SERVICE");
-                        break;
-                    case LocationProvider.TEMPORARILY_UNAVAILABLE:
-                        Log.d("debug", "LocationProvider.TEMPORARILY_UNAVAILABLE");
-                        break;
-                }
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 50, locationListener);
     }
 }
