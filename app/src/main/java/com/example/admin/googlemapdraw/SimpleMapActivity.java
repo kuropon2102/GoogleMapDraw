@@ -1,6 +1,7 @@
 package com.example.admin.googlemapdraw;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,9 +18,13 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 
 public class SimpleMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -45,9 +50,36 @@ public class SimpleMapActivity extends FragmentActivity implements OnMapReadyCal
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-//        LatLng tokyo = new LatLng(35, 139);
-//        mMap.addMarker(new MarkerOptions().position(tokyo).title("Marker in Tokyo"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(tokyo));
+        double lat = 34.65;
+        double lon = 135;
+
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        // GPSで測位
+        Location loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        // 測位できない場合
+        if (loc == null) {
+            // Wi-Fiで測位
+            loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+        // 測位できた場合
+        if (loc != null) {
+            lat = loc.getLatitude();
+            lon = loc.getLongitude();
+        }
+
+        LatLng myLoc = new LatLng(lat, lon);
+        CameraPosition.Builder builder = new CameraPosition.Builder();
+        // 方向
+        builder.bearing(0);
+        // 表示角度
+        builder.tilt(0);
+        // 倍率
+        builder.zoom(18);
+        // 位置
+        builder.target(myLoc);
+        CameraUpdate cUpdate = CameraUpdateFactory.newCameraPosition(builder.build());
+        mMap.moveCamera(cUpdate);
 
         // DangerousなPermissionはリクエストして許可をもらわないと使えない
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
